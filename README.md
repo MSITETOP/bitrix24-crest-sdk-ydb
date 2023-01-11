@@ -11,9 +11,16 @@ bx24 = CRestApp(
     ydb_credentials = 't1............................'
 )
 
-Получение кредлов базы ydb
+CREATE TABLE `portals`
+(
+    `member_id` Utf8,
+    `access_token` Utf8,
+    `client_endpoint` Utf8,
+    `refresh_token` Utf8,
+    PRIMARY KEY (`member_id`)
+);
 
-cd ubuntu
+
 yc config set service-account-key authorized_key.json
 yc iam create-token
 
