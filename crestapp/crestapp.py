@@ -1,4 +1,3 @@
-#!pip install ydb
 import ydb
 from time import sleep
 import requests
@@ -124,7 +123,7 @@ class CRestApp:
         except:
           return False
 
-    def call(self, method: str, params: dict = {}):
+    def call(self, method: str, params: dict = {}) -> dict:
         """ Makes call to bitrix24 REST and return result
         :param method: REST API Method you want to call
         :params: Request params
@@ -178,7 +177,7 @@ class CRestApp:
 
         return result
 
-    def callBatch(self, batch: dict, batch_params: dict = {}, halt=False):
+    def callBatch(self, batch: dict, batch_params: dict = {}, halt=False) -> dict:
         """ Creates Bitrix Batch and calls them
         :param batch: Dict  with call name and method to call in batch. Eg. {"deals": "crm.deal.list", "fields": "crm.deal.fields"}
         :param halt: Stop batch if error in method
