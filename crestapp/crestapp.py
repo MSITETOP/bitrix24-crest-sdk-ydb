@@ -143,6 +143,7 @@ class CRestApp:
                 uri,
                 json=params,
                 headers={
+                    'Content-Type': 'application/x-www-form-urlencoded',
                     'User-Agent': self.user_agent
                 }
             ).text
