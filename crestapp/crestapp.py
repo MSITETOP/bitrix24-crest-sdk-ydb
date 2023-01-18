@@ -2,7 +2,7 @@ import ydb
 from time import sleep
 import requests
 import json
-
+import logging
 
 class CRestApp:
     """Class for working with Bitrix24 REST API"""
@@ -22,23 +22,25 @@ class CRestApp:
             driver.wait(fail_fast=True, timeout=5)
             self.__session = driver.table_client.session().create()
         except:
+            logging.warning("Error connetc DB")
             print({'status': False, 'error': 'Error connetc DB'})
 
         settings = self.__getAppSettings()
 
         if settings == False:
+            logging.warning("Need Install App")
             print({'status': False, 'error': 'Need Install App'})
 
     def installApp(self, arParams):
         result = {
             'rest_only': True,
             'install': False
-        };
+        }
 
         if arParams.get('event') == 'ONAPPINSTALL' and not arParams.get('auth'):
             result['install'] = self.__setAppSettings(arParams.get('auth'), True)
         elif arParams['PLACEMENT'] == 'DEFAULT':
-            result['rest_only'] = False;
+            result['rest_only'] = False
             arSettings = {
                 'access_token': arParams.get('AUTH_ID'),
                 'expires_in': arParams.get('AUTH_EXPIRES'),
@@ -47,7 +49,7 @@ class CRestApp:
                 'domain': arParams.get('DOMAIN'),
                 'client_endpoint': 'https://' + arParams.get('DOMAIN') + '/rest/',
             }
-            result['install'] = self.__setAppSettings(arSettings);
+            result['install'] = self.__setAppSettings(arSettings)
 
         return self.__getAppSettings()
 
@@ -58,7 +60,7 @@ class CRestApp:
         """
 
         # Make call to oauth server
-        result = requests.get(self.oauth_url, params={
+        result = requests.get(self.oauth_url, timeout=30, params={
             'grant_type': 'refresh_token',
             'client_id': self.app_id,
             'client_secret': self.app_secret,
@@ -67,6 +69,7 @@ class CRestApp:
 
         try:
             result_json = json.loads(result)
+            logging.debug("access_token: {access_token}".format(access_token=result_json['access_token']))
 
             # Renew tokens
             self.access_token = result_json['access_token']
@@ -82,6 +85,7 @@ class CRestApp:
             return {'status': True}
 
         except (ValueError, KeyError):
+            logging.warning("Need Install App")
             return {'status': False, 'error': 'Error on decode OAuth response', 'response': result}
 
     def __setAppSettings(self, arSettings):
@@ -113,9 +117,9 @@ class CRestApp:
         try:
           query = 'DECLARE $member_id AS Utf8; SELECT * FROM `portals`  WHERE `member_id` = $member_id;'
           prepared_query = self.__session.prepare(query)
-          res = self.__session.transaction(ydb.SerializableReadWrite()).execute( prepared_query, { '$member_id': self.__member_id }, commit_tx=True )   
+          res = self.__session.transaction(ydb.SerializableReadWrite()).execute( prepared_query, { '$member_id': self.__member_id }, commit_tx=True )
           settings = res[0].rows[0]
-          
+
           self.endpoint = settings.get("client_endpoint")
           self.access_token = settings.get("access_token")
           self.refresh_token = settings.get("refresh_token")
@@ -139,13 +143,16 @@ class CRestApp:
 
         r = ""
         try:
+            logging.debug("Request: {uri}".format(uri=uri))
             r = requests.post(
                 uri,
                 json=params,
+                timeout=30,
                 headers={
                     'User-Agent': self.user_agent
                 }
             ).text
+            logging.debug("Response: {str}".format(str=r))
             result = json.loads(r)
         except requests.exceptions.ReadTimeout:
             return {'status': False, 'error': 'Timeout waiting expired'}
@@ -161,6 +168,7 @@ class CRestApp:
             r = requests.post(
                 uri,
                 json=params,
+                timeout=30,
                 headers={
                     'User-Agent': self.user_agent
                 }
