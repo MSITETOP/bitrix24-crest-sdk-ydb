@@ -149,6 +149,7 @@ class CRestApp:
                 json=params,
                 timeout=30,
                 headers={
+                    'Content-Type': 'application/x-www-form-urlencoded',
                     'User-Agent': self.user_agent
                 }
             ).text
