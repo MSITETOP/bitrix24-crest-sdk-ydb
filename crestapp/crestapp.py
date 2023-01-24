@@ -6,7 +6,7 @@ import logging
 
 class CRestApp:
     """Class for working with Bitrix24 REST API"""
-    def __init__(self, member_id = '', client_id = '', client_secret = '', ydb_session):
+    def __init__(self, member_id = '', client_id = '', client_secret = '', ydb_session = False):
         self.__member_id = member_id
         self.user_agent = "CRestApp"
         self.inbound_hook = False
