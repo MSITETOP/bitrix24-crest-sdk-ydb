@@ -6,7 +6,7 @@ import logging
 
 class CRestApp:
     """Class for working with Bitrix24 REST API"""
-    def __init__(self, member_id = '', client_id = '', client_secret = '', ydb_endpoint = '', ydb_database = '', ydb_credentials = False):
+    def __init__(self, member_id = '', client_id = '', client_secret = '', ydb_session):
         self.__member_id = member_id
         self.user_agent = "CRestApp"
         self.inbound_hook = False
@@ -14,16 +14,7 @@ class CRestApp:
         self.app_id = client_id
         self.app_secret = client_secret
         
-        try: 
-            if ydb_credentials != False:
-                driver = ydb.Driver(endpoint=ydb_endpoint, database=ydb_database, credentials=ydb.AccessTokenCredentials(ydb_credentials))
-            else:
-                driver = ydb.Driver(endpoint=ydb_endpoint, database=ydb_database)
-            driver.wait(fail_fast=True, timeout=5)
-            self.__session = driver.table_client.session().create()
-        except:
-            logging.warning("Error connetc DB")
-            print({'status': False, 'error': 'Error connetc DB'})
+        self.__session = ydb_session
 
         settings = self.__getAppSettings()
 
