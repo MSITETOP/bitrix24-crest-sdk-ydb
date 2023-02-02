@@ -45,7 +45,7 @@ class CRestApp:
         return self.__getAppSettings()
 
 
-    def __refresh_tokens(self):
+    def refresh_tokens(self):
         """Refresh access token from Bitrix OAuth server
         :return: dict with refreshing status
         """
@@ -167,7 +167,7 @@ class CRestApp:
             result = json.loads(r)
 
         if result.get('error') == 'NO_AUTH_FOUND' or result.get('error') == 'expired_token' or result.get('error') == 'invalid_token':
-            result = self.__refresh_tokens()
+            result = self.refresh_tokens()
             if result['status'] is not True:
                 return result
 
