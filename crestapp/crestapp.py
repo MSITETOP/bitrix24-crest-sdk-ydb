@@ -86,11 +86,13 @@ class CRestApp:
           DECLARE $client_endpoint AS Utf8;
           DECLARE $access_token AS Utf8;
           DECLARE $refresh_token AS Utf8;
-          UPSERT INTO `portals`  ( `member_id`, `client_endpoint`, `access_token`, `refresh_token` ) VALUES ( $member_id, $client_endpoint, $access_token, $refresh_token );
+          DECLARE $timestamp AS Timestamp;
+          UPSERT INTO `portals`  ( `member_id`, `client_endpoint`, `access_token`, `refresh_token`, `timestamp` ) VALUES ( $member_id, $client_endpoint, $access_token, $refresh_token, $timestamp );
           """
 
           prepared_values = {
             '$member_id': self.__member_id,
+            '$timestamp': int(time.time()*1000000), 
             '$client_endpoint': arSettings.get('client_endpoint'),
             '$access_token': arSettings.get('access_token'),
             '$refresh_token': arSettings.get('refresh_token')
