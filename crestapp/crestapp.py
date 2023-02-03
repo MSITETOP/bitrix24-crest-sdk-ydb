@@ -80,7 +80,7 @@ class CRestApp:
             return {'status': False, 'error': 'Error on decode OAuth response', 'response': result}
 
     def __setAppSettings(self, arSettings):
-        try:
+        if self.__member_id and  arSettings.get("client_endpoint") and arSettings.get("access_token") and arSettings.get("refresh_token"):
           query = """
           DECLARE $member_id AS Utf8;
           DECLARE $client_endpoint AS Utf8;
@@ -102,7 +102,7 @@ class CRestApp:
 
           self.__session.transaction(ydb.SerializableReadWrite()).execute( prepared_query, prepared_values, commit_tx=True )
           return True
-        except:
+        else:
           return False
 
     # return mixed setting application for query
