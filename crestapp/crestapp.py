@@ -3,6 +3,7 @@ from time import sleep
 import requests
 import json
 import logging
+import time
 
 class CRestApp:
     """Class for working with Bitrix24 REST API"""
