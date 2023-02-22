@@ -137,7 +137,7 @@ class CRestApp:
 
         r = ""
         try:
-            logging.debug("Request: {uri}".format(uri=uri))
+            logging.info("Request: {uri}, {params}".format(uri=uri,params=params))
             r = requests.post(
                 uri,
                 json=params,
@@ -146,7 +146,7 @@ class CRestApp:
                     'User-Agent': self.user_agent
                 }
             ).text
-            logging.debug("Response: {str}".format(str=r))
+            logging.info("Response: {str}".format(str=r))
             result = json.loads(r)
         except requests.exceptions.ReadTimeout:
             return {'status': False, 'error': 'Timeout waiting expired'}
