@@ -30,7 +30,7 @@ class CRestApp:
         }
 
         if arParams.get('event') == 'ONAPPINSTALL' and arParams.get('auth'):
-            result['install'] = self.__setAppSettings(arParams.get('auth'), True)
+            result['install'] = self.__setAppSettings(arParams.get('auth'))
         elif arParams.get('PLACEMENT') == 'DEFAULT':
             result['rest_only'] = False
             arSettings = {
