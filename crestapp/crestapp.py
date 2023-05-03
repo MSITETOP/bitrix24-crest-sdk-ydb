@@ -4,6 +4,7 @@ import requests
 import json
 import logging
 import time
+import urllib.parse
 
 class CRestApp:
     """Class for working with Bitrix24 REST API"""
@@ -194,12 +195,8 @@ class CRestApp:
             request['auth'] = self.access_token
 
         for key, params in batch_params.items():
-            for param in range(0, len(params)):
-                if param == 0:
-                    batch[key] += "?{}".format(batch_params[key][param])
-                else:
-                    batch[key] += "&{}".format(batch_params[key][param])
-
+            batch[key] += "?{}".format(urllib.parse.urlencode(batch_params[key]))
+        logging.info("Batch: {batch}".format(batch=batch))
         request['cmd'] = batch
 
         result = self.call('batch', request)
