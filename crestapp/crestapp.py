@@ -180,7 +180,7 @@ class CRestApp:
 
         return result
 
-    def __http_build_query(data):
+    def __http_build_query(self, data):
         parents = list()
         pairs = dict()
 
@@ -224,7 +224,7 @@ class CRestApp:
             request['auth'] = self.access_token
 
         for key, params in batch_params.items():
-            batch[key] += "?{}".format(self.__http_build_query(batch_params[key]))
+            batch[key] += "?{}".format(self.__http_build_query(params))
         logging.info("Batch: {batch}".format(batch=batch))
         request['cmd'] = batch
 
