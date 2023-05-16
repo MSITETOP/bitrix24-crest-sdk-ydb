@@ -122,7 +122,7 @@ class CRestApp:
         except:
           return False
 
-    def call(self, method: str, params: dict = {}) -> dict:
+    def call(self, method: str, params: dict = {}, data: dict = {}) -> dict:
         """ Makes call to bitrix24 REST and return result
         :param method: REST API Method you want to call
         :params: Request params
@@ -134,7 +134,12 @@ class CRestApp:
             uri = self.inbound_hook + '/' + method
         else:
             uri = self.endpoint + method
-            params['auth'] = self.access_token
+            if len(data):
+                data['auth'] = self.access_token
+                params = False
+            else:
+                data = False
+                params['auth'] = self.access_token
 
         r = ""
         try:
@@ -142,6 +147,7 @@ class CRestApp:
             r = requests.post(
                 uri,
                 json=params,
+                data=data,
                 timeout=30,
                 headers={
                     'User-Agent': self.user_agent
