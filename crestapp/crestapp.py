@@ -184,6 +184,8 @@ class CRestApp:
             # Repeat API request after renew token
             result = self.call(method, params)
 
+        if result.get('error'):
+            logging.error("ERROR: {str}".format(str=result.get('error')))
         return result
 
     def __http_build_query(self, data):
