@@ -53,7 +53,7 @@ class CRestApp:
         """
 
         # Make call to oauth server
-        result = requests.get(self.oauth_url, timeout=30, params={
+        result = requests.get(self.oauth_url, timeout=10, params={
             'grant_type': 'refresh_token',
             'client_id': self.app_id,
             'client_secret': self.app_secret,
@@ -122,7 +122,7 @@ class CRestApp:
         except:
           return False
 
-    def call(self, method: str, params: dict = {}, data: dict = {}) -> dict:
+    def call(self, method: str, params: dict = {}, data: dict = {}, refresh = False) -> dict:
         """ Makes call to bitrix24 REST and return result
         :param method: REST API Method you want to call
         :params: Request params
@@ -148,7 +148,7 @@ class CRestApp:
                 uri,
                 json=params,
                 data=data,
-                timeout=30,
+                timeout=10,
                 headers={
                     'User-Agent': self.user_agent
                 }
@@ -164,25 +164,13 @@ class CRestApp:
             else:
                 return {'status': False, 'error': 'Could not connect to bx24 resource', 'uri': uri}
 
-        while result.get('error') == 'QUERY_LIMIT_EXCEEDED':
-            sleep(0.3)
-            r = requests.post(
-                uri,
-                json=params,
-                timeout=30,
-                headers={
-                    'User-Agent': self.user_agent
-                }
-            ).text
-            result = json.loads(r)
-
-        if result.get('error') == 'NO_AUTH_FOUND' or result.get('error') == 'expired_token' or result.get('error') == 'invalid_token':
+        if refresh == False and (result.get('error') == 'NO_AUTH_FOUND' or result.get('error') == 'expired_token' or result.get('error') == 'invalid_token'):
             result = self.refresh_tokens()
             if result['status'] is not True:
                 return result
 
             # Repeat API request after renew token
-            result = self.call(method, params)
+            result = self.call(method, params, refresh = True)
 
         if result.get('error'):
             logging.error("ERROR: {str}".format(str=result.get('error')))
