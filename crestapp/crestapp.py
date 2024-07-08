@@ -133,7 +133,7 @@ class CRestApp:
         if self.inbound_hook:
             uri = self.inbound_hook + '/' + method
         else:
-            uri = self.endpoint + method
+            uri = self.endpoint.replace('http://', 'https://') + method
             if len(data):
                 data['auth'] = self.access_token
                 params = False
